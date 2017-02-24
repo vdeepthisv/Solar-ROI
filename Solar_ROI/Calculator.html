@@ -1,0 +1,370 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.8/angular.js"></script>
+  <script src="./assets/js/highcharts.js"></script> 
+  <script src="./assets/js/cal.js"></script>
+   
+     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+	<meta charset="utf-8">
+	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
+
+	<title>Solar ROI|Vijaya Deepthi Srivoleti</title>
+
+	<link rel="shortcut icon" href="assets/images/gt_favicon.png">
+	
+	<!-- Bootstrap -->
+	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.no-icons.min.css" rel="stylesheet">
+	<!-- Icon font -->
+	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<!-- Fonts -->
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Alice|Open+Sans:400,300,700">
+	<!-- Custom styles -->
+	<link rel="stylesheet" href="assets/css/styles.css">
+
+	<!--[if lt IE 9]> <script src="assets/js/html5shiv.js"></script> <![endif]-->
+
+<nav class="navbar navbar-default navbar-sticky">
+		<div class="container-fluid">
+			
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+			</div>
+			
+			<div class="navbar-collapse collapse">
+				
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="Feedback.php">Feedback</a></li>
+								
+			</div><!--/.nav-collapse -->			
+		</div>	
+	</nav>
+
+
+</head>
+<body ng-app="Calculatedetails">
+
+<header id="header">
+	<div id="head" class="parallax" parallax-speed="1">
+		<h1 id="logo" class="text-center">
+			<img class="img-circle" src="assets/images/sun.jpg" alt="">
+			<span class="title">SOLAR ROI</span>
+			
+		</h1>
+	</div>
+
+	<nav class="navbar navbar-default navbar-sticky">
+		<div class="container-fluid">
+			
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+			</div>
+			
+			<div class="navbar-collapse collapse">
+				
+				
+			
+			</div><!--/.nav-collapse -->			
+		</div>	
+	</nav>
+</header>
+
+<main id="main">
+
+
+	<div class="container">
+		<div class="row topspace">
+			<div class="col-sm-8 col-sm-offset-2">
+															
+				<article class="post">
+					<header class="entry-header">
+						
+						<h1 class="entry-title"><b>Solar ROI Calculator</b></h1>
+					</header>
+<div class="scroll">
+<h3>Solar Energy: Today's resource for a brighter tomorrow</h3>
+</div>
+<div class="entry-content">
+						
+
+<fieldset id = "location">
+         <legend><b> Current Location </legend></b>
+         <p>Your current logged in Address: <div id="address"></div></p>
+     </body>
+
+     <script type="text/javascript" charset="utf-8">
+
+     $(document).ready(function() {
+         var currgeocoder;
+
+         //Set geo location lat and long
+
+         navigator.geolocation.getCurrentPosition(function(position, html5Error) {
+
+             geo_loc = processGeolocationResult(position);
+             currLatLong = geo_loc.split(",");
+             initializeCurrent(currLatLong[0], currLatLong[1]);
+
+        });
+
+        //Get geo location result
+
+       function processGeolocationResult(position) {
+             html5Lat = position.coords.latitude; //Get latitude
+             html5Lon = position.coords.longitude; //Get longitude
+             html5TimeStamp = position.timestamp; //Get timestamp
+             html5Accuracy = position.coords.accuracy; //Get accuracy in meters
+             return (html5Lat).toFixed(8) + ", " + (html5Lon).toFixed(8);
+
+       }
+
+        //Check value is present or not & call google api function
+
+        function initializeCurrent(latcurr, longcurr) {
+             currgeocoder = new google.maps.Geocoder();
+             console.log(latcurr + "-- ######## --" + longcurr);
+
+             if (latcurr != '' && longcurr != '') {
+                 var myLatlng = new google.maps.LatLng(latcurr, longcurr);
+                 return getCurrentAddress(myLatlng);
+             }
+       }
+
+        //Get current address
+
+         function getCurrentAddress(location) {
+              currgeocoder.geocode({
+                  'location': location
+
+
+            }, function(results, status) {
+           
+                if (status == google.maps.GeocoderStatus.OK) {
+                   console.log(results[0]);
+
+                   var cityname=$("#address").html(results[0].formatted_address);
+		document.getElementById('cityname').value= results[0].formatted_address;		
+ 
+	
+                }
+ else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+         }
+    });
+
+
+    </script>
+</fieldset>
+
+<fieldset>      
+<legend> Current Temperature </legend>
+
+<input type="text" id="cityname" >
+
+<input type="button" value="Get the current temperature" onclick="getOpts()">
+celsius<input type="radio" id="celc" checked name="sys"/>farenheit<input type="radio" name="sys"/>
+<br>
+<div id="wrapper">
+<img id="cond"></img>
+<div id="txt"></div>
+<div id="rain"></div>
+</div>
+<div id="res"></div>
+<script>
+function weather(o){
+document.getElementById("wrapper").style.display="block";
+document.getElementById("res").innerHTML="";
+var raindisp="none"
+var obj=o.query.results.channel.item;
+document.getElementById("cond").src="http://l.yimg.com/a/i/us/we/52/"+obj.condition.code+".gif";
+document.getElementById("txt").innerHTML=obj.title
++"<br>Temperature: "+obj.condition.temp
++"<br>Conditions: "+obj.condition.text
++"<br>Forecast: "+obj.forecast[0].text;
+var fc=obj.forecast[0].code;
+//var fc=11; //for testing
+var rains=[1,2,3,4,5,6,7,8,9,10,11,12,13,37,38,39,40,45,46,47]; //rain forecast codes from http://developer.yahoo.com/weather/
+  for (var i = 0; i < rains.length; i++) {
+  if(rains[i]==fc){
+  raindisp="block"
+  break;
+	}
+  }
+document.getElementById("rain").style.display=raindisp;  
+document.body.removeChild(document.getElementById("myscript"))  
+}
+
+function showIt(num){
+var unit=document.getElementById("celc").checked?"'c'":"'f'";
+var scr=document.createElement("script")
+scr.id="myscript"
+scr.src="http://query.yahooapis.com/v1/public/yql?q=select%20item%20from%20weather.forecast%20where%20woeid="+num+"+%20and%20u="+unit+"&format=json&callback=weather";
+document.body.appendChild(scr)
+}
+
+function makeList(o){
+if(!o.query.results){document.getElementById("res").innerHTML="Invalid city name. Please try again"; return}
+var obj=o.query.results.place;
+if(obj.length>1){
+document.getElementById("res").innerHTML="Did you mean...<br>";
+for (var i = 0; i < obj.length; i++) {
+document.getElementById("res").innerHTML+=obj[i].name+", "+obj[i].admin1.content+" "+obj[i].country.code+" <input type='button' value='get weather' onclick='showIt("+obj[i].woeid+")'/><br>";
+	}
+} else {
+showIt(obj.woeid)
+}
+document.body.removeChild(document.getElementById("numscript")) 
+}
+
+function getOpts(){
+var city=document.getElementById("cityname").value
+document.getElementById("wrapper").style.display="none";
+var scr=document.createElement("script")
+scr.id="numscript"
+scr.src="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20geo.places%20where%20text%3D%22"+city+"%22&format=json&callback=makeList";
+document.body.appendChild(scr)
+}
+</script>
+</fieldset>
+<aside align="right">
+  <fieldset id = "Sundata" >
+
+<script type="text/javascript">
+
+ $(document).ready(function() {
+
+
+    $("#display").click(function() {                
+
+      $.ajax({    //create an ajax request to load_page.php
+        type: "POST",
+        url: "data.php",             
+        dataType: "html",   //expect html to be returned                
+        success: function(response){                    
+            $("#responsecontainer").html(response); 
+            //alert(response);
+        }
+
+    });
+});
+});
+</script>
+ 
+ <fieldset id = "Sunduration" >
+<legend align="left"><b>Duration of sunlight</b></legend>
+<table border="1" align="center">
+   <tr>
+       <td> <input type="button" id="display" value="Display Data" /> </td>
+   </tr>
+</table>
+</fieldset>
+<div id="responsecontainer" align="center">
+
+</div>
+
+</aside><div class="container">
+<body ng-app="Calculatedetails">
+ <form class="calculatorForm" ng-submit="submit()" ng-controller="formController">
+
+  <fieldset id = "details" >
+    <legend>Solar Production Details </legend>
+	<table cellspacing="40">
+	<tr><td>
+ 	<label>Enter System Size:</label> </td>
+	<td><input type="number" class="form-control calframe" ng-model="Systemsize" placeholder=" in KWh" min="1" max="6">
+	</td></tr>
+	<tr><td>
+	 <label>Enter monthly bill:</label></td>
+	<td> <input type="number" class="form-control calframe" ng-model="Monthlybill" placeholder=" in $"> </td></tr>
+	<tr><td>	
+ 	<label>Enter monthly consumption:</label></td>
+	 <td><input type="number" class="form-control calframe" ng-model="Monthlyconsumption" placeholder=" in Kwh" > </tr>
+</table>
+
+</div>
+
+<div class="container">
+  <button type="submit">Calculate</button> </div>
+
+</form>
+<section class="displayresults">
+<br/>
+
+
+<div id="Displayresults">
+<table >
+	<tr>	
+		<td>
+			
+		<th>Without Solar</th>
+		<tr> <td><label>Yearly consumption (Kwh)</label></td>
+		<td><span class="Yearlyconsumption"></td></tr>
+
+		<tr> <td><label>Power consumpotion for 25 years (Kwh)</label></td>
+		<td><span class="Yearlyconsumption25"></td></tr>
+
+		<tr>
+		<td><label>Yearly bill($)</label></td>
+		<td><span class="Solarbill"></td></tr>
+		<tr>
+		<td><label>Electricity bill without solar for 25($)</label></td>
+		<td><span class="Solarbill25"></td></tr>
+		</td>
+<br/>
+<br/>
+		<td>
+			<th>With Solar</th>
+		<tr> <td><label>Average Sunlight hours per year(hours)</label></td>
+		<td><span class="solarhours"></td></tr>
+		<tr>
+		<td><label>Average Solar Production per year with tax(Kwh)</label></td>
+		<td><span class="solarproductionperyearwithtax"></td></tr>
+		
+		<tr>
+		<td><label>Excess Power(Kwh)</label></td>
+		<td><span class="Excesspower"></td></tr>
+
+		
+
+		<tr>
+		<td><label>Average Electricity bill per year ($)</label></td>
+		<td><span class="Yearlybill"></td></tr>
+		
+		
+		<tr>
+		<td><label>Electricity bill for 25 years($)</label></td>
+		<td><span class="Yearlybill25"></td></tr>
+
+		<tr>
+		<td><label>Money saved for 25 years($)</label></td>
+		<td><span class="Moneyback"></td></tr>
+
+
+		</td>
+	</tr>
+
+
+	</table>
+
+
+</div>
+</section>
+<Legend>Solar Production Details</legend>
+<div class="row section topspace" >
+	
+	<div class="panel panel-cta">
+		<div class="panel-body" id="graph"></div>
+		<div class="panel-body" id="graph3"></div>
+	</div>
+
+</div>
+
+
+
+
+</body>
+
+</html>
